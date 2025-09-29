@@ -19,7 +19,7 @@ export interface VKOptions {
     scopeSeparator?: string;
     profileURL?: string;
     photoSize?: number;
-    passReqToCallback?: false;
+    passReqToCallback?: boolean;
 }
 
 export interface VKProfile {
@@ -59,7 +59,7 @@ export class VKStrategy extends OAuth2Strategy {
         options.authorizationURL = options.authorizationURL || 'https://id.vk.ru/authorize';
         options.tokenURL = options.tokenURL || 'https://id.vk.ru/oauth2/auth';
         options.scopeSeparator = options.scopeSeparator || ',';
-        options.passReqToCallback = undefined;
+        options.passReqToCallback = true;
 
         // @ts-ignore
         super(options, verifyWrapper(options, verify));
@@ -73,9 +73,9 @@ export class VKStrategy extends OAuth2Strategy {
         delete (options as any).photoSize;
     }
 
-    tokenParams(options: Record<string, any>) {
+    tokenParams(req: any) {
         const params: Record<string, string> = {};
-        const state = options.state;
+        const state = req.query.state;  // берём state из query редиректа
         if (!state) throw new Error('Missing state for PKCE token request');
         const code_verifier = PKCEStore[state];
         if (!code_verifier) throw new Error('Missing code_verifier for this state');
