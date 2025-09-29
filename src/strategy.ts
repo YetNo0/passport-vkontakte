@@ -1,7 +1,5 @@
 import { parse } from './profile';
-import util from 'util';
 import { Strategy as OAuth2Strategy, InternalOAuthError } from 'passport-oauth2';
-import { VkontakteAuthorizationError } from './errors/vkontakte-authorization-error';
 import { VkontakteTokenError } from './errors/vkontakte-token-error';
 import { VkontakteAPIError } from './errors/vkontakte-api-error';
 
@@ -13,8 +11,8 @@ export interface VKOptions {
     profileFields?: string[];
     apiVersion?: string;
     lang?: string;
-    authorizationURL: string;
-    tokenURL: string;
+    authorizationURL?: string;
+    tokenURL?: string;
     scopeSeparator?: string;
     profileURL?: string;
     photoSize?: number;
@@ -60,6 +58,7 @@ export class VKStrategy extends OAuth2Strategy {
         options.scopeSeparator = options.scopeSeparator || ',';
         options.passReqToCallback = undefined;
 
+        // @ts-ignore
         super(options, verifyWrapper(options, verify));
 
         this.lang = options.lang || 'en';
