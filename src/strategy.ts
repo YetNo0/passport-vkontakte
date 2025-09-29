@@ -2,6 +2,9 @@ import { parse } from './profile';
 import { Strategy as OAuth2Strategy, InternalOAuthError } from 'passport-oauth2';
 import { VkontakteTokenError } from './errors/vkontakte-token-error';
 import { VkontakteAPIError } from './errors/vkontakte-api-error';
+import * as crypto from "node:crypto";
+
+const PKCEStore: Record<string, string> = {};
 
 export interface VKOptions {
     clientID: string;
@@ -70,11 +73,33 @@ export class VKStrategy extends OAuth2Strategy {
         delete (options as any).photoSize;
     }
 
+    tokenParams(options: Record<string, any>) {
+        const params: Record<string, string> = {};
+        const state = options.state;
+        if (!state) throw new Error('Missing state for PKCE token request');
+        const code_verifier = PKCEStore[state];
+        if (!code_verifier) throw new Error('Missing code_verifier for this state');
+        delete PKCEStore[state];
+        params.grant_type =  'authorization_code'
+        params.code_verifier = code_verifier;
+
+        return params;
+    }
+
     authorizationParams(options: Record<string, any>) {
         const params: Record<string, string> = {};
         if (options.display) {
             params.display = options.display;
         }
+        const code_verifier = crypto.randomBytes(64).toString('hex');
+        const state = crypto.randomBytes(16).toString('hex');
+        PKCEStore[state] = code_verifier;
+        const hash = crypto.createHash('sha256').update(code_verifier).digest();
+        const code_challenge = hash.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        params.code_verifier = code_verifier
+        params.code_challenge = code_challenge
+        params.code_challenge_method = 'S256'
+
         return params;
     }
 

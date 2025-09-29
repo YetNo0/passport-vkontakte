@@ -1,15 +1,40 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VKStrategy = void 0;
 const profile_1 = require("./profile");
 const passport_oauth2_1 = require("passport-oauth2");
 const vkontakte_token_error_1 = require("./errors/vkontakte-token-error");
 const vkontakte_api_error_1 = require("./errors/vkontakte-api-error");
+const crypto = __importStar(require("node:crypto"));
+const PKCEStore = {};
 class VKStrategy extends passport_oauth2_1.Strategy {
     constructor(options, verify) {
         options = options || {};
-        options.authorizationURL = options.authorizationURL || 'https://oauth.vk.ru/authorize';
-        options.tokenURL = options.tokenURL || 'https://oauth.vk.ru/access_token';
+        options.authorizationURL = options.authorizationURL || 'https://id.vk.ru/authorize';
+        options.tokenURL = options.tokenURL || 'https://id.vk.ru/oauth2/auth';
         options.scopeSeparator = options.scopeSeparator || ',';
         options.passReqToCallback = undefined;
         // @ts-ignore
@@ -27,11 +52,32 @@ class VKStrategy extends passport_oauth2_1.Strategy {
         delete options.lang;
         delete options.photoSize;
     }
+    tokenParams(options) {
+        const params = {};
+        const state = options.state;
+        if (!state)
+            throw new Error('Missing state for PKCE token request');
+        const code_verifier = PKCEStore[state];
+        if (!code_verifier)
+            throw new Error('Missing code_verifier for this state');
+        delete PKCEStore[state];
+        params.grant_type = 'authorization_code';
+        params.code_verifier = code_verifier;
+        return params;
+    }
     authorizationParams(options) {
         const params = {};
         if (options.display) {
             params.display = options.display;
         }
+        const code_verifier = crypto.randomBytes(64).toString('hex');
+        const state = crypto.randomBytes(16).toString('hex');
+        PKCEStore[state] = code_verifier;
+        const hash = crypto.createHash('sha256').update(code_verifier).digest();
+        const code_challenge = hash.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        params.code_verifier = code_verifier;
+        params.code_challenge = code_challenge;
+        params.code_challenge_method = 'S256';
         return params;
     }
     userProfile(accessToken, done) {
