@@ -9,6 +9,7 @@ export interface VKOptions {
     clientID: string;
     clientSecret: string;
     callbackURL: string;
+    scope?: string[];
     profileFields?: string[];
     apiVersion?: string;
     lang?: string;
