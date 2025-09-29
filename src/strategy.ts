@@ -75,6 +75,7 @@ export class VKStrategy extends OAuth2Strategy {
 
     tokenParams(req: any) {
         const params: Record<string, string> = {};
+        console.log(req)
         const state = req.query.state;  // берём state из query редиректа
         if (!state) throw new Error('Missing state for PKCE token request');
         const code_verifier = PKCEStore[state];
