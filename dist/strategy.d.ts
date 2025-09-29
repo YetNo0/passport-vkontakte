@@ -41,7 +41,7 @@ export declare class VKStrategy extends OAuth2Strategy {
     private readonly lang;
     private readonly photoSize;
     constructor(options: VKOptions, verify: VerifyFunction);
-    tokenParams(options: Record<string, any>): Record<string, string>;
+    tokenParams(params: any): any;
     authorizationParams(options: Record<string, any>): Record<string, string>;
     userProfile(accessToken: string, done: (err: any, profile?: VKProfile) => void): void;
     parseErrorResponse(body: string, status: number): Error | null;

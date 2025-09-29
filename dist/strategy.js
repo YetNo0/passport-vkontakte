@@ -52,13 +52,8 @@ class VKStrategy extends passport_oauth2_1.Strategy {
         delete options.lang;
         delete options.photoSize;
     }
-    tokenParams(options) {
-        const params = {};
-        const req = this._req;
-        console.log(req);
-        if (!req)
-            throw new Error('No request available in VKStrategy');
-        const state = req.query.state;
+    tokenParams(params) {
+        const state = params.state; // берем state из params
         if (!state)
             throw new Error('Missing state for PKCE token request');
         const code_verifier = PKCEStore[state];
