@@ -73,13 +73,8 @@ export class VKStrategy extends OAuth2Strategy {
         delete (options as any).photoSize;
     }
 
-    tokenParams(options: Record<string, any>) {
-        const params: Record<string, string> = {};
-        const req = (this as any)._req;
-        console.log(req)
-        if (!req) throw new Error('No request available in VKStrategy');
-
-        const state = req.query.state;
+    tokenParams(params: any) {
+        const state = params.state; // берем state из params
         if (!state) throw new Error('Missing state for PKCE token request');
         const code_verifier = PKCEStore[state];
         if (!code_verifier) throw new Error('Missing code_verifier for this state');
