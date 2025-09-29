@@ -12,6 +12,7 @@ class VKStrategy extends passport_oauth2_1.Strategy {
         options.tokenURL = options.tokenURL || 'https://oauth.vk.ru/access_token';
         options.scopeSeparator = options.scopeSeparator || ',';
         options.passReqToCallback = undefined;
+        // @ts-ignore
         super(options, verifyWrapper(options, verify));
         this.name = 'vkontakte';
         this._profileURL = '';

@@ -53,8 +53,8 @@ export class VKStrategy extends OAuth2Strategy {
 
     constructor(options: VKOptions, verify: VerifyFunction) {
         options = options || {};
-        options.authorizationURL = options.authorizationURL || 'https://oauth.vk.ru/authorize';
-        options.tokenURL = options.tokenURL || 'https://oauth.vk.ru/access_token';
+        options.authorizationURL = options.authorizationURL || 'https://id.vk.ru/authorize';
+        options.tokenURL = options.tokenURL || 'https://id.vk.ru/oauth2/auth';
         options.scopeSeparator = options.scopeSeparator || ',';
         options.passReqToCallback = undefined;
 

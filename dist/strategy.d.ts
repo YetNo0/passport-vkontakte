@@ -7,8 +7,8 @@ export interface VKOptions {
     profileFields?: string[];
     apiVersion?: string;
     lang?: string;
-    authorizationURL: string;
-    tokenURL: string;
+    authorizationURL?: string;
+    tokenURL?: string;
     scopeSeparator?: string;
     profileURL?: string;
     photoSize?: number;
