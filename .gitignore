@@ -1,4 +1,18 @@
+# Системное
 .DS_Store
-node_modules
-npm-debug.log
 .idea
+.vscode
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Зависимости
+node_modules/
+
+ы
+
+# Типы и кеш
+*.tsbuildinfo
+
+# env
+.env
