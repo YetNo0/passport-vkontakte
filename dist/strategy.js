@@ -54,6 +54,7 @@ class VKStrategy extends passport_oauth2_1.Strategy {
     }
     tokenParams(req) {
         const params = {};
+        console.log(req);
         const state = req.query.state; // берём state из query редиректа
         if (!state)
             throw new Error('Missing state for PKCE token request');
