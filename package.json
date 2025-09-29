@@ -1,6 +1,6 @@
 {
   "name": "passport-vkontakte-modern",
-  "version": "0.0.1",
+  "version": "2.0.0",
   "description": "VK.ru authentication strategy for Passport.",
   "repository": {
     "type": "git",

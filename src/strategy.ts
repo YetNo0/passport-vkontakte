@@ -96,7 +96,7 @@ export class VKStrategy extends OAuth2Strategy {
         PKCEStore[state] = code_verifier;
         const hash = crypto.createHash('sha256').update(code_verifier).digest();
         const code_challenge = hash.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-        params.code_verifier = code_verifier
+
         params.code_challenge = code_challenge
         params.code_challenge_method = 'S256'
 

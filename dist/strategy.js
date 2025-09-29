@@ -36,7 +36,7 @@ class VKStrategy extends passport_oauth2_1.Strategy {
         options.authorizationURL = options.authorizationURL || 'https://id.vk.ru/authorize';
         options.tokenURL = options.tokenURL || 'https://id.vk.ru/oauth2/auth';
         options.scopeSeparator = options.scopeSeparator || ',';
-        options.passReqToCallback = undefined;
+        options.passReqToCallback = true;
         // @ts-ignore
         super(options, verifyWrapper(options, verify));
         this.name = 'vkontakte';
@@ -52,9 +52,9 @@ class VKStrategy extends passport_oauth2_1.Strategy {
         delete options.lang;
         delete options.photoSize;
     }
-    tokenParams(options) {
+    tokenParams(req) {
         const params = {};
-        const state = options.state;
+        const state = req.query.state; // берём state из query редиректа
         if (!state)
             throw new Error('Missing state for PKCE token request');
         const code_verifier = PKCEStore[state];
@@ -75,7 +75,6 @@ class VKStrategy extends passport_oauth2_1.Strategy {
         PKCEStore[state] = code_verifier;
         const hash = crypto.createHash('sha256').update(code_verifier).digest();
         const code_challenge = hash.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-        params.code_verifier = code_verifier;
         params.code_challenge = code_challenge;
         params.code_challenge_method = 'S256';
         return params;
